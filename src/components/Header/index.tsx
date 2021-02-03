@@ -7,12 +7,12 @@ import { Container, Right, Left } from './styles'
 const Header: React.FC = () => (
   <Container>
     <Right>
-      <a href="#">
+      <a href="/">
         <AkaryosLogo />
       </a>
     </Right>
     <Left>
-      <a href="#">Log In</a>
+      <a href="/login">Log In</a>
     </Left>
   </Container>
 )
