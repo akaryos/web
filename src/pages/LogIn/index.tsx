@@ -1,19 +1,54 @@
-import React from 'react'
+import React, { useRef, useCallback } from 'react'
+import { FormHandles } from '@unform/core'
+import { Form } from '@unform/web'
+import * as Yup from 'yup'
 
-// import Button from '../../components/Button/index'
+import Input from '../../components/Input'
+import Button from '../../components/Button'
 
 import { Container } from './style'
 
-const LogIn: React.FC = () => (
-  <Container>
-    <form action="">
-      <h1>Log In</h1>
+interface Data {
+  username: string
+  password: string
+}
 
-      <input type="text" placeholder="Username"/>
-      <input type="password" placeholder="Password"/>
-      <button>Log In</button>
-    </form>
-  </Container>
-)
+const LogIn: React.FC = () => {
+  const formRef = useRef<FormHandles>(null)
+
+  const handleSubmit = useCallback(async (data: Data) => {
+    try {
+      const schema = Yup.object().shape({
+        username: Yup.string().required(),
+        password: Yup.string().required()
+      })
+
+      await schema.validate(data, { abortEarly: false })
+    } catch (error) {
+      if (!data.username && !data.password) {
+        formRef.current?.setErrors({
+          username: 'This field required',
+          password: 'This field required'
+        })
+      } else if (!data.username) {
+        formRef.current?.setErrors({ username: 'This field required' })
+      } else if (!data.password) {
+        formRef.current?.setErrors({ password: 'This field required' })
+      }
+    }
+  }, [])
+
+  return (
+    <Container>
+      <Form ref={formRef} onSubmit={handleSubmit}>
+        <h1>Log In</h1>
+
+        <Input name="username" type="text"/>
+        <Input name="password" type="password"/>
+        <Button type="submit">Log In</Button>
+      </Form>
+    </Container>
+  )
+}
 
 export default LogIn
